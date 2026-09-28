@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}JanSetu — deck{% endblock %}
+{% block page %}deck{% endblock %}
+{% block content %}
+<section class="slide">
+  <p class="kicker">Build with AI: Code for Communities · Digital public infrastructure</p>
+  <h1>JanSetu</h1>
+  <p class="lede">Citizen demand, placed where public money is decided.</p>
+  <p>A digital public good for India. Voice, text, and messaging. Twelve languages. One ledger a planning desk can defend.</p>
+</section>
+<section class="slide">
+  <p class="kicker">The break</p>
+  <h1>Requests and budgets live in different buildings.</h1>
+  <p>Citizens ask for water, roads, clinics, and schools in the language and the app they already have. Scheme lines still follow last year’s coverage and last year’s absorptive capacity. Nobody can say, in one room, whether the money met the ask.</p>
+</section>
+<section class="slide">
+  <p class="kicker">The product</p>
+  <h1>One record, four ways in.</h1>
+  <ul>
+    <li>Text and SMS on the web desk</li>
+    <li>Smartphone voice, in the speaker’s language</li>
+    <li>A feature-phone missed call and keypad</li>
+    <li>A messaging sandbox with the same webhook shape a gateway would use</li>
+  </ul>
+  <p>Every path writes the same row: place, language, need, severity, channel, reference.</p>
+</section>
+<section class="slide">
+  <p class="kicker">The score · 34 / 30 / 20 / 16</p>
+  <h1>Demand, deficit, equity, money.</h1>
+  <p>Demand mixes how many people spoke and how loud it is per lakh residents. Deficit is the coverage gap. Equity is rural share and deprivation. Money is the share of voice minus the share of the scheme line. Weights are published. Ties in classification are refused, not guessed.</p>
+</section>
+<section class="slide">
+  <p class="kicker">What the desk sees</p>
+  <h1>{{ home.pulse.hotspots }} hotspots. ₹{{ "%.0f"|format(home.pulse.unfunded_cr) }} crore short on the six notes.</h1>
+  <p>{{ "{:,}".format(home.pulse.requests) }} records, {{ home.pulse.languages }} languages, {{ home.pulse.districts }} districts. {{ home.pulse.people_label }} people are named in the six recommended projects — project beneficiaries, not a unique headcount.</p>
+  {% if brief %}
+  <p><strong>Lead note.</strong> {{ brief.district }}, {{ brief.state }} — {{ brief.sector_label }}. Priority {{ brief.priority }}. Indicative package ₹{{ "%.1f"|format(brief.tranche_cr) }} crore against a scheme line of ₹{{ "%.1f"|format(brief.allocated_cr) }} crore.</p>
+  {% endif %}
+</section>
+<section class="slide">
+  <p class="kicker">The quiet districts</p>
+  <h1>Low complaint volume is not a clean chit.</h1>
+  {% if under %}
+  <p>{{ under[0].district }} sits on the under-heard shelf: coverage {{ under[0].infra }}/100, voice reach {{ (under[0].voice * 100)|round|int }}%, {{ under[0].requests }} records. The score does not invent the missing complaints. It refuses to treat silence as satisfaction.</p>
+  {% endif %}
+</section>
+<section class="slide">
+  <p class="kicker">A public good</p>
+  <h1>Readable, optional model, no Aadhaar.</h1>
+  <ul>
+    <li>No account and no full phone number</li>
+    <li>The lexicon runs on the server; citizen text is not shipped to a vendor</li>
+    <li>Gemini, if a key is set, rewrites a note from the numbers only</li>
+    <li>The ledger can be downloaded</li>
+    <li>A container is ready for Cloud Run; production would add SSO, a gateway, and Cloud SQL</li>
+  </ul>
+</section>
+<section class="slide">
+  <p class="kicker">Three minutes</p>
+  <h1>How to show it.</h1>
+  <ol>
+    <li>Open the home page. The quote and the bars are the live ledger.</li>
+    <li>File a Tamil or Hindi sample from the citizen desk. Take the reference.</li>
+    <li>Open the receipt, then the cabinet note for that district.</li>
+    <li>On the planning desk, open Rayagada’s road note and the under-heard shelf.</li>
+    <li>End on the method page. The weights are the product.</li>
+  </ol>
+  <p>This deck prints to PDF from the browser. Landscape, one slide to a page.</p>
+</section>
+{% endblock %}

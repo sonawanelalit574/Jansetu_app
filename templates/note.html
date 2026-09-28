@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}{% if cell %}{{ cell.district }} · {{ cell.sector_label }} — JanSetu{% else %}Note — JanSetu{% endif %}{% endblock %}
+{% block page %}note{% endblock %}
+{% block content %}
+{% if not cell %}
+<article class="prose">
+  <h1>This note is not on the ledger.</h1>
+  <p><a href="{{ url_for('jansetu.console') }}">Back to the planning desk</a></p>
+</article>
+{% else %}
+<article class="note">
+  <p class="kicker">Cabinet note · decision aid, not a sanction</p>
+  <p class="note-signal">{{ cell.signal }} · priority {{ cell.priority }}</p>
+  <h1>{{ cell.project }}</h1>
+  <p class="note-place">{{ cell.district }}, {{ cell.state }} · {{ cell.sector_label }} · {{ cell.scheme }}</p>
+  <p class="lang-en" id="narrative">{{ cell.narrative_en }}</p>
+  <p class="lang-hi">{{ cell.narrative_hi }}</p>
+
+  <dl class="note-grid">
+    <div><dt>Citizen records</dt><dd>{{ cell.requests }}</dd></div>
+    <div><dt>Coverage index</dt><dd>{{ cell.infra }}<span>/100</span></dd></div>
+    <div><dt>Rural</dt><dd>{{ cell.rural|round|int }}%</dd></div>
+    <div><dt>Deprivation</dt><dd>{{ cell.deprivation|round|int }}</dd></div>
+    <div><dt>Scheme line</dt><dd>₹{{ "%.1f"|format(cell.allocated_cr) }} Cr</dd></div>
+    <div><dt>Spent</dt><dd>₹{{ "%.1f"|format(cell.spent_cr) }} Cr</dd></div>
+    <div><dt>Indicative package</dt><dd>₹{{ "%.1f"|format(cell.tranche_cr) }} Cr</dd></div>
+    <div><dt>People in the package</dt><dd>{{ cell.beneficiary_label }}</dd></div>
+  </dl>
+
+  <h2>Evidence</h2>
+  {% if cell.quotes %}
+  <ul class="evidence">
+    {% for quote in cell.quotes %}
+    <li>
+      <p>{{ quote.text }}</p>
+      <span>{{ quote.ref }} · {{ quote.channel }} · severity {{ quote.severity }}/5</span>
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p>No citizen record is on file for this cell. The note is carried by the deficit and who lives here.</p>
+  {% endif %}
+
+  {% if cell.peers %}
+  <p class="peers">Also hot in {{ cell.sector_label|lower }}: {{ cell.peers|join(", ") }}.</p>
+  {% endif %}
+
+  <div class="note-actions">
+    <button type="button" class="button button-ghost" id="narrate">Rewrite the paragraph with Gemini</button>
+    <a class="button button-ghost" href="{{ url_for('jansetu.console') }}">Back to the desk</a>
+    <button type="button" class="button button-ghost" onclick="window.print()">Print</button>
+  </div>
+  <p class="hint" id="narrate-msg"></p>
+</article>
+{% endif %}
+{% endblock %}
+{% block scripts %}
+{% if cell %}
+<script>
+  document.getElementById("narrate").addEventListener("click", async function () {
+    var msg = document.getElementById("narrate-msg");
+    msg.textContent = "Asking…";
+    var res = await fetch("/api/note/{{ cell.slug }}/{{ cell.sector }}/narrate", {method: "POST"});
+    var data = await res.json();
+    if (!data.ok) {
+      msg.textContent = data.error || "The local note stands.";
+      return;
+    }
+    document.getElementById("narrative").textContent = data.text;
+    msg.textContent = "Rewritten from the published numbers only.";
+  });
+</script>
+{% endif %}
+{% endblock %}

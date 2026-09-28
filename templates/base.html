@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en" data-lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}JanSetu{% endblock %}</title>
+  <meta name="description" content="JanSetu places citizen infrastructure requests — in India's languages, on the channels people already use — beside demographics, infrastructure gaps, and public investment.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230d6a56'/%3E%3Cpath d='M7 21V14h4v7M21 21V12h4v9M9 14c2.2-4 11.8-4 14 0' fill='none' stroke='%23f6f1e6' stroke-width='1.7'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,520;9..144,640&family=Outfit:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+</head>
+<body data-page="{% block page %}home{% endblock %}">
+  <a class="skip" href="#content">Skip to content</a>
+  <header class="site-header">
+    <a class="brand" href="{{ url_for('jansetu.landing') }}">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="currentColor"/><path d="M7 21V14h4v7M21 21V12h4v9M9 14c2.2-4 11.8-4 14 0" fill="none" stroke="#f6f1e6" stroke-width="1.7"/></svg>
+      <span>JanSetu <em>जनसेतु</em></span>
+    </a>
+    <nav class="site-nav">
+      <a href="{{ url_for('jansetu.desk') }}" {% if request.endpoint == 'jansetu.desk' %}aria-current="page"{% endif %}>File a request</a>
+      <a href="{{ url_for('jansetu.console') }}" {% if request.endpoint == 'jansetu.console' %}aria-current="page"{% endif %}>Planning desk</a>
+      <a href="{{ url_for('jansetu.method') }}" {% if request.endpoint == 'jansetu.method' %}aria-current="page"{% endif %}>Method</a>
+    </nav>
+    <div class="lang-switch" role="group" aria-label="Language">
+      <button type="button" data-set-lang="en" class="is-on">EN</button>
+      <button type="button" data-set-lang="hi">हि</button>
+    </div>
+  </header>
+  <main id="content">
+    {% block content %}{% endblock %}
+  </main>
+  <footer class="site-footer">
+    <p>JanSetu is an independent prototype of a digital public good. It is not the Government of India. Figures in this ledger are demonstration estimates shaped from public scheme patterns, not official statistics.</p>
+    <p class="footer-links">
+      <a href="{{ url_for('jansetu.method') }}">How the score works</a>
+      <a href="{{ url_for('jansetu.deck') }}">Printable deck</a>
+      <a href="{{ url_for('jansetu.open_data') }}">Download the ledger</a>
+    </p>
+  </footer>
+  <script>
+    (function () {
+      var key = "jansetu-lang";
+      var stored = localStorage.getItem(key) || "en";
+      document.documentElement.dataset.lang = stored;
+      function paint() {
+        document.querySelectorAll("[data-set-lang]").forEach(function (btn) {
+          btn.classList.toggle("is-on", btn.dataset.setLang === document.documentElement.dataset.lang);
+        });
+      }
+      paint();
+      document.querySelectorAll("[data-set-lang]").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          document.documentElement.dataset.lang = btn.dataset.setLang;
+          localStorage.setItem(key, btn.dataset.setLang);
+          paint();
+          document.dispatchEvent(new Event("jansetu-lang"));
+        });
+      });
+    })();
+  </script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

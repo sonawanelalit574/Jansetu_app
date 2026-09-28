@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+{% block title %}JanSetu — citizen demand, placed where public money is decided{% endblock %}
+{% block page %}home{% endblock %}
+{% block content %}
+<section class="hero">
+  <div>
+    <p class="kicker lang-en">Digital public good · Infrastructure &amp; governance</p>
+    <p class="kicker lang-hi">डिजिटल पब्लिक गुड · बुनियादी ढाँचा और शासन</p>
+    <h1 class="lang-en">The country is already saying what it needs.</h1>
+    <h1 class="lang-hi">देश बता रहा है। योजना तक आवाज़ पहुँचनी बाकी है।</h1>
+    <p class="lede lang-en">Development requests sit in WhatsApp groups, missed-call lines, and portals that do not talk to each other. JanSetu gathers them in the language people actually speak, then sets that demand beside who lives there, how thin the infrastructure is, and where this year’s money already sits.</p>
+    <p class="lede lang-hi">माँग व्हाट्सऐप, मिस्ड कॉल और अलग-अलग पोर्टलों में बिखरी है। जनसेतु उसे उसी भाषा में समेटता है जिसमें लोग बोलते हैं, और उसे आबादी, ढाँचे की कमी, और इस साल के आवंटन के बगल में रखता है।</p>
+    <div class="hero-actions">
+      <a class="button" href="{{ url_for('jansetu.desk') }}"><span class="lang-en">File a request</span><span class="lang-hi">शिकायत दर्ज करें</span></a>
+      <a class="button button-ghost" href="{{ url_for('jansetu.console') }}"><span class="lang-en">Open the planning desk</span><span class="lang-hi">योजना डेस्क खोलें</span></a>
+    </div>
+  </div>
+  <aside class="hero-card">
+    <p class="eyebrow lang-en">Heard just now, from the ledger</p>
+    <p class="eyebrow lang-hi">खाते से, अभी की आवाज़</p>
+    {% if home.quotes %}
+    <blockquote>
+      <p>{{ home.quotes[0].text }}</p>
+      <footer>{{ home.quotes[0].district }}, {{ home.quotes[0].state }} · {{ home.quotes[0].sector_label }} · {{ home.quotes[0].channel }}</footer>
+    </blockquote>
+    {% endif %}
+    <dl class="mini-stats">
+      <div><dt class="lang-en">Records</dt><dt class="lang-hi">रिकॉर्ड</dt><dd>{{ "{:,}".format(home.pulse.requests) }}</dd></div>
+      <div><dt class="lang-en">Languages</dt><dt class="lang-hi">भाषाएँ</dt><dd>{{ home.pulse.languages }}</dd></div>
+      <div><dt class="lang-en">Hotspots</dt><dt class="lang-hi">हॉटस्पॉट</dt><dd>{{ home.pulse.hotspots }}</dd></div>
+    </dl>
+  </aside>
+</section>
+
+<section class="band">
+  <article>
+    <p class="step">01</p>
+    <h2 class="lang-en">Hear</h2>
+    <h2 class="lang-hi">सुनना</h2>
+    <p class="lang-en">Text, a smartphone microphone, a feature-phone missed call, an SMS, or a messaging thread. Twelve Indian languages, plus Hindi written in Roman script.</p>
+    <p class="lang-hi">लिखित, फ़ोन का माइक, फीचर फ़ोन की मिस्ड कॉल, एसएमएस, या मैसेज। बारह भारतीय भाषाएँ, और रोमन लिपि में हिन्दी।</p>
+  </article>
+  <article>
+    <p class="step">02</p>
+    <h2 class="lang-en">Place</h2>
+    <h2 class="lang-hi">रखना</h2>
+    <p class="lang-en">Each record is read for language, sector, and urgency, then joined to the district’s population, rural share, deprivation, coverage index, and scheme line.</p>
+    <p class="lang-hi">हर रिकॉर्ड से भाषा, क्षेत्र और तात्कालिकता पढ़ी जाती है, फिर जिले की आबादी, ग्रामीण हिस्सा, वंचना, कवरेज और योजना राशि से जोड़ा जाता है।</p>
+  </article>
+  <article>
+    <p class="step">03</p>
+    <h2 class="lang-en">Choose</h2>
+    <h2 class="lang-hi">चुनना</h2>
+    <p class="lang-en">A planning desk gets hotspots, a shelf for places that are quiet and badly served, and a cabinet note with a scheme fit. The note does not sanction money.</p>
+    <p class="lang-hi">योजना डेस्क को हॉटस्पॉट मिलते हैं, एक शेल्फ़ उन जगहों के लिए जो शांत भी हैं और पिछड़ी भी, और एक कैबिनेट नोट। नोट मंजूरी नहीं है।</p>
+  </article>
+</section>
+
+<section class="split">
+  <div>
+    <p class="eyebrow lang-en">Where voice is loud, and where the line is thin</p>
+    <p class="eyebrow lang-hi">जहाँ आवाज़ तेज़ है, और राशि पतली</p>
+    <h2 class="lang-en">The six notes on the desk today</h2>
+    <h2 class="lang-hi">आज डेस्क पर छह नोट</h2>
+    <p class="lang-en">The long bar is an indicative first-year package. The short bar is what the scheme line already holds. The gap is the misalignment a budget can still correct.</p>
+    <p class="lang-hi">लंबी पट्टी पहले वर्ष का संकेतक पैकेज है। छोटी पट्टी इस वर्ष की योजना राशि है। अंतर वह बेमेल है जिसे बजट अभी सुधार सकता है।</p>
+  </div>
+  <div class="money-list">
+    {% set peak = home.money|map(attribute='tranche_cr')|max %}
+    {% for row in home.money %}
+    <div class="money-row">
+      <div class="money-name">{{ row.name }}</div>
+      <div class="track" aria-hidden="true"><span class="ask" style="width: {{ (row.tranche_cr / peak * 100)|round }}%"></span></div>
+      <div class="track thin" aria-hidden="true"><span class="have" style="width: {{ (row.allocated_cr / peak * 100)|round(1) }}%"></span></div>
+      <p class="money-fig">₹{{ "%.1f"|format(row.tranche_cr) }} Cr indicative · ₹{{ "%.1f"|format(row.allocated_cr) }} Cr on the line</p>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="split languages-band">
+  <div>
+    <p class="eyebrow lang-en">Languages on file</p>
+    <p class="eyebrow lang-hi">खाते में भाषाएँ</p>
+    <h2 class="lang-en">A planning system that can hear more than English and Hindi.</h2>
+    <h2 class="lang-hi">योजना की मेज़ सिर्फ़ अंग्रेज़ी और हिन्दी न सुने।</h2>
+  </div>
+  <ul class="lang-bars">
+    {% set lmax = home.languages|map(attribute='count')|max %}
+    {% for row in home.languages if row.count %}
+    <li>
+      <span>{{ row.native }}</span>
+      <span class="bar"><i style="width: {{ (row.count / lmax * 100)|round }}%"></i></span>
+      <b>{{ row.count }}</b>
+    </li>
+    {% endfor %}
+  </ul>
+</section>
+
+<section class="principles">
+  <h2 class="lang-en">What makes it a public good</h2>
+  <h2 class="lang-hi">इसे सार्वजनिक वस्तु क्या बनाता है</h2>
+  <div class="band">
+    <article>
+      <h3 class="lang-en">No account, no Aadhaar</h3>
+      <h3 class="lang-hi">न खाता, न आधार</h3>
+      <p class="lang-en">A request needs a place and a need. A full phone number is never stored. The receipt is a reference, not an identity.</p>
+      <p class="lang-hi">शिकायत के लिए जगह और ज़रूरत काफ़ी है। पूरा फ़ोन नंबर नहीं रखा जाता। रसीद एक संदर्भ है, पहचान नहीं।</p>
+    </article>
+    <article>
+      <h3 class="lang-en">The score is readable</h3>
+      <h3 class="lang-hi">अंक पढ़ा जा सकता है</h3>
+      <p class="lang-en">Demand, deficit, equity, and the allocation gap. Weights are published. Silence in a low-reach district is not treated as satisfaction.</p>
+      <p class="lang-hi">माँग, कमी, समता, और आवंटन का अंतर। भार सार्वजनिक है। कम पहुँच वाले जिले की खामोशी को संतुष्टि नहीं माना जाता।</p>
+    </article>
+    <article>
+      <h3 class="lang-en">The engine stays home</h3>
+      <h3 class="lang-hi">इंजन यहीं रहता है</h3>
+      <p class="lang-en">Classification runs on the server. Citizen text is not sent to a model vendor unless someone deliberately asks Gemini to rewrite a note — and even then, only the numbers go.</p>
+      <p class="lang-hi">वर्गीकरण सर्वर पर होता है। नागरिक का मूल पाठ मॉडल को नहीं जाता, जब तक कोई जानबूझकर नोट न लिखवाए — और तब भी सिर्फ़ आँकड़े जाते हैं।</p>
+    </article>
+  </div>
+</section>
+{% endblock %}

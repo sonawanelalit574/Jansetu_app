@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+{% block title %}File a request — JanSetu{% endblock %}
+{% block page %}desk{% endblock %}
+{% block content %}
+<section class="page-head">
+  <div>
+    <p class="kicker lang-en">Citizen desk</p>
+    <p class="kicker lang-hi">नागरिक डेस्क</p>
+    <h1 class="lang-en">Say it in the language you use at home.</h1>
+    <h1 class="lang-hi">उसी भाषा में कहिए जो घर पर बोलते हैं।</h1>
+    <p class="lede lang-en">Water, a road, power, a clinic, a school, a toilet, a house, or a phone network. Text, voice, or a messaging thread all land on the same ledger.</p>
+    <p class="lede lang-hi">पानी, सड़क, बिजली, अस्पताल, स्कूल, शौचालय, मकान, या नेटवर्क। लिखिए, बोलिए, या मैसेज भेजिए — खाता एक ही है।</p>
+  </div>
+</section>
+
+<section class="desk-grid">
+  <form class="composer" id="composer">
+    <div class="seg" role="tablist">
+      <button type="button" class="is-on" data-channel="web" role="tab">Text</button>
+      <button type="button" data-channel="voice" role="tab">Voice</button>
+      <button type="button" data-channel="whatsapp" role="tab">WhatsApp</button>
+    </div>
+
+    <label for="district"><span class="lang-en">District</span><span class="lang-hi">जिला</span></label>
+    <select id="district" name="district_id">
+      <option value="">Select a district</option>
+      {% set ns = namespace(state="") %}
+      {% for d in districts %}
+        {% if d.state != ns.state %}
+          {% if ns.state %}</optgroup>{% endif %}
+          <optgroup label="{{ d.state }}">
+          {% set ns.state = d.state %}
+        {% endif %}
+        <option value="{{ d.id }}" data-lang="{{ d.lang }}">{{ d.name }}</option>
+      {% endfor %}
+      {% if districts %}</optgroup>{% endif %}
+    </select>
+
+    <div data-panel="web">
+      <label for="body"><span class="lang-en">What do you need?</span><span class="lang-hi">क्या चाहिए?</span></label>
+      <textarea id="body" rows="6" maxlength="800" placeholder="Write in your language. Name the problem, and say if children, a school, or an ambulance is stuck."></textarea>
+      <label class="check"><input type="checkbox" id="as-sms"> <span class="lang-en">Send as SMS (160 characters)</span><span class="lang-hi">एसएमएस की तरह भेजें (160 अक्षर)</span></label>
+      <p class="hint" id="sms-count" hidden></p>
+      <div class="samples">
+        <p class="lang-en">Try a line from the ledger</p>
+        <p class="lang-hi">खाते की एक पंक्ति आज़माइए</p>
+        <div class="chips">
+          {% for sample in samples %}
+          <button type="button" class="chip" data-sample data-district="{{ sample.district_id }}" data-text="{{ sample.text }}">{{ sample.label }}</button>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <div data-panel="voice" hidden>
+      <div class="voice-modes">
+        <button type="button" class="is-on" data-voice="phone">Smartphone</button>
+        <button type="button" data-voice="ivr">Feature phone</button>
+      </div>
+      <div data-voice-panel="phone">
+        <button type="button" class="mic" id="mic"><span class="lang-en">Hold the mic and speak</span><span class="lang-hi">माइक दबाकर बोलिए</span></button>
+        <p class="hint" id="mic-hint">Uses this browser’s speech engine. If it has none, paste a transcript below and file it as voice.</p>
+        <textarea id="transcript" rows="4" placeholder="Transcript"></textarea>
+      </div>
+      <div data-voice-panel="ivr" hidden>
+        <p class="ivr-number">1800 202 2626</p>
+        <p class="lang-en">A missed call, then the keypad. No smartphone, no app, no data pack. Pick the district above, then the need.</p>
+        <p class="lang-hi">मिस्ड कॉल, फिर कीपैड। न स्मार्टफ़ोन, न ऐप, न डेटा। ऊपर जिला चुनिए, फिर ज़रूरत।</p>
+        <div class="keypad" id="keypad">
+          {% for code, meta in sectors.items() %}
+          <button type="button" data-key="{{ code }}">{{ meta.key }} · {{ meta.label }}</button>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <div data-panel="whatsapp" hidden>
+      <div class="phone" id="phone">
+        <header>JanSetu · messaging sandbox</header>
+        <div class="thread" id="thread"></div>
+        <div class="wa-compose">
+          <input id="wa-input" maxlength="800" placeholder="Message" autocomplete="off">
+          <button type="button" id="wa-send">Send</button>
+        </div>
+      </div>
+      <p class="hint lang-en">This sandbox writes the same ledger a WhatsApp Business webhook would. It is not connected to WhatsApp.</p>
+      <p class="hint lang-hi">यह सैंडबॉक्स वही खाता लिखता है जो एक मैसेजिंग वेबहुक लिखेगा। यह व्हाट्सऐप से जुड़ा नहीं है।</p>
+    </div>
+
+    <div class="file-row" id="file-row">
+      <button type="submit" class="button" id="file"><span class="lang-en">File this request</span><span class="lang-hi">शिकायत दर्ज करें</span></button>
+    </div>
+  </form>
+
+  <aside class="reading" aria-live="polite">
+    <p class="eyebrow lang-en">Reading</p>
+    <p class="eyebrow lang-hi">पढ़ाई</p>
+    <div id="reading">
+      <p class="muted lang-en">Start writing. The language, the need, and the severity show up here before you file.</p>
+      <p class="muted lang-hi">लिखना शुरू कीजिए। दर्ज करने से पहले भाषा, ज़रूरत और गंभीरता यहाँ दिखेगी।</p>
+    </div>
+    <div id="receipt" hidden></div>
+  </aside>
+</section>
+
+<section class="recent">
+  <h2 class="lang-en">Already on the ledger</h2>
+  <h2 class="lang-hi">खाते में पहले से</h2>
+  <ul>
+    {% for row in recent %}
+    <li>
+      <a href="{{ url_for('jansetu.track', ref=row.ref) }}">{{ row.ref }}</a>
+      <p>{{ row.body }}</p>
+      <span>{{ row.district }}, {{ row.state }} · {{ row.channel }}</span>
+    </li>
+    {% endfor %}
+  </ul>
+</section>
+<script id="boot" type="application/json">{{ {"ivr": ivr, "sectors": sectors}|tojson }}</script>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/desk.js') }}"></script>
+{% endblock %}

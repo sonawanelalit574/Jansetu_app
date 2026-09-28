@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Planning desk — JanSetu{% endblock %}
+{% block page %}console{% endblock %}
+{% block content %}
+<section class="page-head">
+  <div>
+    <p class="kicker lang-en">National planning desk · demonstration ledger</p>
+    <p class="kicker lang-hi">राष्ट्रीय योजना डेस्क · प्रदर्शन खाता</p>
+    <h1 class="lang-en">Where the requests and the rupees do not meet.</h1>
+    <h1 class="lang-hi">जहाँ शिकायतें और रुपये एक जगह नहीं पड़ते।</h1>
+  </div>
+</section>
+<div class="filters">
+  <label>State
+    <select id="filter-state"><option value="">All India</option></select>
+  </label>
+  <label>Need
+    <select id="filter-sector">
+      <option value="">All needs</option>
+      {% for code, meta in sectors.items() %}
+      <option value="{{ code }}">{{ meta.label }}</option>
+      {% endfor %}
+    </select>
+  </label>
+  <label>District
+    <input id="filter-q" type="search" placeholder="Search">
+  </label>
+</div>
+<div id="console-root">
+  <p class="muted">Reading the ledger…</p>
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/console.js') }}"></script>
+{% endblock %}

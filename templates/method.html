@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Method — JanSetu{% endblock %}
+{% block page %}method{% endblock %}
+{% block content %}
+<article class="prose">
+  <p class="kicker">Method</p>
+  <h1>A score a planning officer can argue with.</h1>
+  <p>JanSetu does not produce a magic ranking. Every district–sector cell is scored from four questions. The weights are fixed, published, and the same for every state in this ledger.</p>
+
+  <ol class="weights">
+    <li><b>{{ weights.demand }}</b><span>Demand. Citizen records, weighted by severity, by how recent they are, and by whether the need is still open. Large districts are not erased by a per-lakh rate, and a small district does not win on a handful of messages alone.</span></li>
+    <li><b>{{ weights.need }}</b><span>Deficit. 100 minus the coverage index for that sector. A district with almost no piped water scores higher here than a district that is mostly connected.</span></li>
+    <li><b>{{ weights.equity }}</b><span>Who lives there. Rural share and a deprivation index. The same complaint means more where people have less.</span></li>
+    <li><b>{{ weights.money }}</b><span>Allocation gap. The cell’s share of voice in that sector, minus its share of the scheme line. Money that follows last year’s coverage, rather than this year’s demand, shows up here.</span></li>
+  </ol>
+
+  <h2>Hotspots and the under-heard shelf</h2>
+  <p>A hotspot is a cell near the top of the score with enough records to defend in a meeting. Separately, the desk keeps an under-heard shelf: high deficit, very low voice reach, and almost no records. Those places are not multiplied by a made-up factor. They are shown as what they are — badly served, and barely heard. Silence is not a clean chit.</p>
+
+  <h2>What the engine reads</h2>
+  <p>Script detection picks the language. A lexicon then picks the sector: drinking water, roads, electricity, primary health, schools, sanitation, digital connectivity, or housing. Urgency rises when the text mentions an ambulance, a doctor, a teacher, children, or a number of days. If two sectors tie, the engine refuses to guess and asks.</p>
+  <p>Hindi in Roman script (“gaon me pani nahi”) is recognised from the words, not from the script. A missed-call keypad is trusted as the label, because that is how a feature-phone IVR actually works.</p>
+
+  <h2>The cabinet note</h2>
+  <p>The six notes are a portfolio: different needs, different states, plus one seat for an under-heard district. Each note names a scheme that already exists — Jal Jeevan Mission, PMGSY, RDSS, PM-ABHIM / NHM, Samagra Shiksha, Swachh Bharat Mission, BharatNet, PMAY-Gramin — and an indicative first-year package.</p>
+  <p>The package is people in the gap, times a planning assumption about unit cost, times a slice that is meant to be one year’s work. It is not a sanctioned estimate and not an official schedule of rates. It exists so a desk can see a thin scheme line next to a thick need.</p>
+
+  <h2>What is not sent away</h2>
+  <p>Classification runs on this server. Citizen text is not sent to an outside model. If <code>GEMINI_API_KEY</code> is set, a planning officer can ask Gemini to rewrite a note. That call sends the published numbers only — district, sector, counts, coverage, rupees — and not the citizen’s words.</p>
+
+  <h2>What this prototype is not</h2>
+  <p>The districts, populations, coverage indices, and scheme lines are a demonstration ledger shaped from the pattern of public Indian datasets. They are not Census figures, not mission dashboards, and not a budget document. Production use would need government SSO on the desk, a telecom and messaging gateway on the intake, and a database that more than one Cloud Run instance can share. The scoring service itself does not need to change for that.</p>
+  <p>The same shape — intake, lexicon, four-part score, cabinet note — can sit under another country’s schemes. This build is for India’s languages, missions, and districts, because that is the decision in front of this desk.</p>
+</article>
+{% endblock %}

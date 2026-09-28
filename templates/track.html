@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}{% if item %}{{ item.ref }} — JanSetu{% else %}Request — JanSetu{% endif %}{% endblock %}
+{% block page %}track{% endblock %}
+{% block content %}
+{% if not item %}
+<article class="prose">
+  <h1>No request under {{ ref }}.</h1>
+  <p>Check the reference, or <a href="{{ url_for('jansetu.desk') }}">file a new one</a>.</p>
+</article>
+{% else %}
+<article class="prose track">
+  <p class="kicker">Receipt</p>
+  <h1>{{ item.ref }}</h1>
+  <p class="lede">{{ item.district }}, {{ item.state }} · {{ item.sector_label }} · {{ item.language_label }} · {{ item.channel_label }}</p>
+  <blockquote><p>{{ item.body }}</p></blockquote>
+  <p>{{ item.gloss }}</p>
+  <ol class="timeline">
+    <li class="is-done"><b>Heard</b><span>Filed {{ item.created_at }} · severity {{ item.severity }} of 5</span></li>
+    <li class="is-done"><b>Classified</b><span>{{ item.sector_label }}, in {{ item.language_label }}</span></li>
+    <li class="is-done"><b>On the district picture</b><span>Visible to the planning desk under {{ item.district }} · {{ item.sector_label }}</span></li>
+    <li class="{{ 'is-done' if item.status in ['in_plan', 'addressed'] else '' }}"><b>Marked for a plan</b><span>{{ "In a plan" if item.status in ["in_plan", "addressed"] else "Not yet" }}</span></li>
+    <li class="{{ 'is-done' if item.status == 'addressed' else '' }}"><b>Work recorded</b><span>{{ "Recorded as addressed" if item.status == "addressed" else "Still open" }}</span></li>
+  </ol>
+  <p><a class="button" href="{{ url_for('jansetu.note', slug=item.slug, sector=item.sector) }}">Open the cabinet note</a></p>
+</article>
+{% endif %}
+{% endblock %}
